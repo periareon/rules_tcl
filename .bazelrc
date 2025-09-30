@@ -30,10 +30,6 @@ build --incompatible_default_to_explicit_init_py
 build --incompatible_autoload_externally=
 
 ###############################################################################
-## Configuration Flags
-###############################################################################
-
-###############################################################################
 ## Custom user flags
 ##
 ## This should always be the last thing in the `.bazelrc` file to ensure

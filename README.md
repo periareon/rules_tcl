@@ -4,7 +4,7 @@ Bazel rules for the Tcl programming language.
 
 ## Documentation
 
-https://abrisco.github.io/rules_tcl/
+<https://periareon.github.io/rules_tcl/>
 
 ## Examples
 
