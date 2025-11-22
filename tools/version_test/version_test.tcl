@@ -38,6 +38,7 @@ if {$found_version eq $expected_version} {
     puts "PASS: MODULE.bazel version '$found_version' matches VERSION='$expected_version'"
     exit 0
 } else {
-    puts stderr "FAIL: MODULE.bazel version '$found_version' does not match VERSION='$expected_version'"
+    puts stderr "FAIL: MODULE.bazel version '$found_version' does not match " \
+        "VERSION='$expected_version'"
     exit 1
 }

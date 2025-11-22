@@ -58,11 +58,13 @@ def _tcl_toolchain_impl(ctx):
 
     return [
         platform_common.ToolchainInfo(
+            label = ctx.label,
             make_variable_info = make_variable_info,
             tclsh = ctx.executable.tclsh,
             includes = depset([tcllib_info.include, tcl_core_info.include]),
             init_tcl = tcl_core_info.init_tcl,
             tcllib_pkg_index = tcllib_info.pkg_index,
+            tclint = ctx.attr.tclint,
             all_files = all_files,
         ),
         make_variable_info,
@@ -75,6 +77,11 @@ tcl_toolchain = rule(
         "tclcore": attr.label(
             doc = "A label to the `tclcore` files.",
             mandatory = True,
+        ),
+        "tclint": attr.label(
+            doc = "The [`tclint`](https://github.com/nmoroze/tclint) python library.",
+            cfg = "target",
+            mandatory = False,
         ),
         "tcllib": attr.label(
             doc = "A label to the `tcllib` files.",

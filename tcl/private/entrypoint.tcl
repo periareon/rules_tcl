@@ -14,7 +14,7 @@ if {$argc < 3} {
 
 # Extract config and main script paths
 set config_path [lindex $argv 0]
-set main_path   [lindex $argv 1]
+set main_path [lindex $argv 1]
 
 # Find `--` separator
 set separator_index -1

@@ -1,4 +1,5 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load(":tcl.bzl", "tcl_library")
 
 exports_files([
     "binary_wrapper.bat.tpl",
@@ -20,5 +21,14 @@ bzl_library(
     srcs = glob(["*.bzl"]),
     visibility = ["//tcl:__pkg__"],
     deps = [
+        "//tcl/private/linting:bzl_lib",
+    ],
+)
+
+tcl_library(
+    name = "entrypoint",
+    srcs = [
+        "entrypoint.tcl",
+        "pkgIndex.tcl",
     ],
 )

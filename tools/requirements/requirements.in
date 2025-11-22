@@ -1,0 +1,8 @@
+# Python requirements
+-r ../../tcl/requirements.in
+
+# Development dependencies
+black
+isort
+pylint
+mypy
