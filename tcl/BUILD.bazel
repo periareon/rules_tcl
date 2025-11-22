@@ -1,6 +1,16 @@
 load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
 
-exports_files(glob(["*.bzl"]))
+exports_files([
+    "defs.bzl",
+    "tcl_binary.bzl",
+    "tcl_info.bzl",
+    "tcl_library.bzl",
+    "tcl_test.bzl",
+    "tcl_toolchain.bzl",
+    "tcl_lint_aspect.bzl",
+    "tcl_lint_test.bzl",
+    "requirements.in",
+])
 
 toolchain_type(
     name = "toolchain_type",

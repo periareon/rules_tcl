@@ -1,22 +1,16 @@
-load("//tcl:tcl_format_test.bzl", "tcl_format_test")
 load("//tcl:tcl_library.bzl", "tcl_library")
 load("//tcl:tcl_lint_test.bzl", "tcl_lint_test")
 
 tcl_library(
-    name = "writelib",
+    name = "test_lib",
     srcs = [
         "pkgIndex.tcl",
-        "write.tcl",
+        "test_lib.tcl",
     ],
     visibility = ["//tcl/private/tests:__subpackages__"],
 )
 
 tcl_lint_test(
-    name = "writelib_lint",
-    target = ":writelib",
-)
-
-tcl_format_test(
-    name = "writelib_format",
-    target = ":writelib",
+    name = "test_lib_lint",
+    target = ":test_lib",
 )

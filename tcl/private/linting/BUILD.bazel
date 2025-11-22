@@ -1,0 +1,52 @@
+load("@bazel_skylib//:bzl_library.bzl", "bzl_library")
+load("@rules_venv//python:py_binary.bzl", "py_binary")
+load("//tcl/private/linting:lint.bzl", "current_tcl_tclint_toolchain")
+
+current_tcl_tclint_toolchain(
+    name = "current_tcl_tclint_toolchain",
+)
+
+py_binary(
+    name = "format_checker",
+    srcs = ["format_checker.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":current_tcl_tclint_toolchain",
+        "@rules_venv//python/runfiles",
+    ],
+)
+
+py_binary(
+    name = "formatter",
+    srcs = ["formatter.py"],
+    data = [
+        "//tcl/settings:tclint_config",
+    ],
+    env = {
+        "TCLFMT_SETTINGS_PATH": "$(rlocationpath //tcl/settings:tclint_config)",
+    },
+    visibility = ["//visibility:public"],
+    deps = [
+        ":current_tcl_tclint_toolchain",
+        "@rules_venv//python/runfiles",
+    ],
+)
+
+py_binary(
+    name = "linter",
+    srcs = ["linter.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":current_tcl_tclint_toolchain",
+        "@rules_venv//python/runfiles",
+    ],
+)
+
+bzl_library(
+    name = "bzl_lib",
+    srcs = glob(["*.bzl"]),
+    visibility = ["//tcl/private:__pkg__"],
+    deps = [
+        "@rules_venv//python:defs_bzl",
+    ],
+)

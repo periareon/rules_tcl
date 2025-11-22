@@ -30,6 +30,22 @@ build --incompatible_default_to_explicit_init_py
 build --incompatible_autoload_externally=
 
 ###############################################################################
+## Configuration Flags
+###############################################################################
+
+# Enable tclint for all targets in the workspace
+build:tclint --aspects=//tcl:tcl_lint_aspect.bzl%tcl_lint_aspect
+build:tclint --output_groups=+tcl_lint_checks
+
+# Enable tclfmt for all targets in the workspace
+build:tclfmt --aspects=//tcl:tcl_format_aspect.bzl%tcl_format_aspect
+build:tclfmt --output_groups=+tcl_format_checks
+
+# Define a config that enables all linter aspects.
+build:strict --config=tclint
+build:strict --config=tclfmt
+
+###############################################################################
 ## Custom user flags
 ##
 ## This should always be the last thing in the `.bazelrc` file to ensure
