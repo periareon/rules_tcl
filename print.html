@@ -172,8 +172,15 @@ register_toolchains(
 <h2 id="rules"><a class="header" href="#rules">Rules</a></h2>
 <ul>
 <li><a href="rules.html#tcl_binary">tcl_binary</a></li>
+<li><a href="rules.html#tcl_format_test">tcl_format_test</a></li>
 <li><a href="rules.html#tcl_library">tcl_library</a></li>
+<li><a href="rules.html#tcl_lint_test">tcl_lint_test</a></li>
 <li><a href="rules.html#tcl_toolchain">tcl_toolchain</a></li>
+</ul>
+<h2 id="aspects"><a class="header" href="#aspects">Aspects</a></h2>
+<ul>
+<li><a href="rules.html#tcl_format_aspect">tcl_format_aspect</a></li>
+<li><a href="rules.html#tcl_lint_aspect">tcl_lint_aspect</a></li>
 </ul>
 <p><a id="tcl_binary"></a></p>
 <h2 id="tcl_binary"><a class="header" href="#tcl_binary">tcl_binary</a></h2>
@@ -207,6 +214,20 @@ tcl_binary(
 <tr><td style="text-align: left"><a id="tcl_binary-main"></a>main</td><td style="text-align: left">The name of the source file that is the main entry point of the application. This file must also be listed in <code>srcs</code>. If left unspecified, <code>name</code> is used instead. If <code>name</code> does not match any filename in <code>srcs</code>, <code>main</code> must be specified.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">optional</td><td style="text-align: left"><code>None</code></td></tr>
 </tbody></table>
 </div>
+<p><a id="tcl_format_test"></a></p>
+<h2 id="tcl_format_test"><a class="header" href="#tcl_format_test">tcl_format_test</a></h2>
+<pre>
+load("@rules_tcl//tcl:defs.bzl", "tcl_format_test")
+
+tcl_format_test(<a href="rules.html#tcl_format_test-name">name</a>, <a href="rules.html#tcl_format_test-target">target</a>)
+</pre>
+<p>A test for performing format checks on a tcl target.</p>
+<p><strong>ATTRIBUTES</strong></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: left">Name</th><th style="text-align: left">Description</th><th style="text-align: left">Type</th><th style="text-align: left">Mandatory</th><th style="text-align: left">Default</th></tr></thead><tbody>
+<tr><td style="text-align: left"><a id="tcl_format_test-name"></a>name</td><td style="text-align: left">A unique name for this target.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels#target-names">Name</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
+<tr><td style="text-align: left"><a id="tcl_format_test-target"></a>target</td><td style="text-align: left">The target to perform formatting checks on.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
+</tbody></table>
+</div>
 <p><a id="tcl_library"></a></p>
 <h2 id="tcl_library"><a class="header" href="#tcl_library">tcl_library</a></h2>
 <pre>
@@ -223,22 +244,58 @@ tcl_library(<a href="rules.html#tcl_library-name">name</a>, <a href="rules.html#
 <tr><td style="text-align: left"><a id="tcl_library-data"></a>data</td><td style="text-align: left">Files needed by this rule at runtime. May list file or rule targets. Generally allows any target.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">List of labels</a></td><td style="text-align: left">optional</td><td style="text-align: left"><code>[]</code></td></tr>
 </tbody></table>
 </div>
+<p><a id="tcl_lint_test"></a></p>
+<h2 id="tcl_lint_test"><a class="header" href="#tcl_lint_test">tcl_lint_test</a></h2>
+<pre>
+load("@rules_tcl//tcl:defs.bzl", "tcl_lint_test")
+
+tcl_lint_test(<a href="rules.html#tcl_lint_test-name">name</a>, <a href="rules.html#tcl_lint_test-target">target</a>)
+</pre>
+<p>A test for performing lint checks on a tcl target.</p>
+<p><strong>ATTRIBUTES</strong></p>
+<div class="table-wrapper"><table><thead><tr><th style="text-align: left">Name</th><th style="text-align: left">Description</th><th style="text-align: left">Type</th><th style="text-align: left">Mandatory</th><th style="text-align: left">Default</th></tr></thead><tbody>
+<tr><td style="text-align: left"><a id="tcl_lint_test-name"></a>name</td><td style="text-align: left">A unique name for this target.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels#target-names">Name</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
+<tr><td style="text-align: left"><a id="tcl_lint_test-target"></a>target</td><td style="text-align: left">The target to perform linting on.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
+</tbody></table>
+</div>
 <p><a id="tcl_toolchain"></a></p>
 <h2 id="tcl_toolchain"><a class="header" href="#tcl_toolchain">tcl_toolchain</a></h2>
 <pre>
 load("@rules_tcl//tcl:defs.bzl", "tcl_toolchain")
 
-tcl_toolchain(<a href="rules.html#tcl_toolchain-name">name</a>, <a href="rules.html#tcl_toolchain-tclcore">tclcore</a>, <a href="rules.html#tcl_toolchain-tcllib">tcllib</a>, <a href="rules.html#tcl_toolchain-tclsh">tclsh</a>)
+tcl_toolchain(<a href="rules.html#tcl_toolchain-name">name</a>, <a href="rules.html#tcl_toolchain-tclcore">tclcore</a>, <a href="rules.html#tcl_toolchain-tclint">tclint</a>, <a href="rules.html#tcl_toolchain-tcllib">tcllib</a>, <a href="rules.html#tcl_toolchain-tclsh">tclsh</a>)
 </pre>
 <p>A toolchain for building <code>Tcl</code> targets.</p>
 <p><strong>ATTRIBUTES</strong></p>
 <div class="table-wrapper"><table><thead><tr><th style="text-align: left">Name</th><th style="text-align: left">Description</th><th style="text-align: left">Type</th><th style="text-align: left">Mandatory</th><th style="text-align: left">Default</th></tr></thead><tbody>
 <tr><td style="text-align: left"><a id="tcl_toolchain-name"></a>name</td><td style="text-align: left">A unique name for this target.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels#target-names">Name</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
 <tr><td style="text-align: left"><a id="tcl_toolchain-tclcore"></a>tclcore</td><td style="text-align: left">A label to the <code>tclcore</code> files.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
+<tr><td style="text-align: left"><a id="tcl_toolchain-tclint"></a>tclint</td><td style="text-align: left">The <a href="https://github.com/nmoroze/tclint"><code>tclint</code></a> python library.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">optional</td><td style="text-align: left"><code>None</code></td></tr>
 <tr><td style="text-align: left"><a id="tcl_toolchain-tcllib"></a>tcllib</td><td style="text-align: left">A label to the <code>tcllib</code> files.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
 <tr><td style="text-align: left"><a id="tcl_toolchain-tclsh"></a>tclsh</td><td style="text-align: left">The path to a <code>tclsh</code> binary.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
 </tbody></table>
 </div>
+<p><a id="tcl_format_aspect"></a></p>
+<h2 id="tcl_format_aspect"><a class="header" href="#tcl_format_aspect">tcl_format_aspect</a></h2>
+<pre>
+load("@rules_tcl//tcl:defs.bzl", "tcl_format_aspect")
+
+tcl_format_aspect()
+</pre>
+<p>An aspect for performing formatting checks on Tcl targets.</p>
+<p><strong>ASPECT ATTRIBUTES</strong></p>
+<p><strong>ATTRIBUTES</strong></p>
+<p><a id="tcl_lint_aspect"></a></p>
+<h2 id="tcl_lint_aspect"><a class="header" href="#tcl_lint_aspect">tcl_lint_aspect</a></h2>
+<pre>
+load("@rules_tcl//tcl:defs.bzl", "tcl_lint_aspect")
+
+tcl_lint_aspect()
+</pre>
+<p>An aspect for performing lint+formatting checks on Tcl targets.</p>
+<p><strong>ASPECT ATTRIBUTES</strong></p>
+<p><strong>ATTRIBUTES</strong></p>
+
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
