@@ -146,7 +146,11 @@ def run_tclfmt(
                 if result is not None:
                     exit_code = result
             except SystemExit as exc:
-                exit_code = exc.code if exc.code is not None else 0
+                exit_code = (
+                    int(exc.code)
+                    if isinstance(exc.code, int)
+                    else (0 if exc.code is None else 1)
+                )
     finally:
         os.chdir(old_cwd)
         sys.argv = old_argv

@@ -99,7 +99,50 @@ def _tcl_lint_aspect_impl(target, ctx):
     )]
 
 tcl_lint_aspect = aspect(
-    doc = "An aspect for performing lint+formatting checks on Tcl targets.",
+    doc = """\
+An aspect for performing linting checks on Tcl targets.
+
+The `tcl_lint_aspect` applies linting checks to all Tcl targets in the dependency graph.
+It uses [tclint](https://github.com/nmoroze/tclint) to check for code quality issues.
+
+**Usage:**
+
+Apply the aspect to check all dependencies of a target:
+
+```python
+load("@rules_tcl//tcl:tcl_lint_aspect.bzl", "tcl_lint_aspect")
+
+bazel build //my:target --aspects=@rules_tcl//tcl:tcl_lint_aspect.bzl%tcl_lint_aspect
+```
+
+Or use it in a test:
+
+```python
+load("@rules_tcl//tcl:tcl_lint_test.bzl", "tcl_lint_test")
+
+tcl_lint_test(
+    name = "lint_check",
+    target = ":my_library",
+)
+```
+
+**Ignoring targets:**
+
+To skip linting for specific targets, add one of these tags:
+- `no_tcl_lint`
+- `no_lint`
+- `nolint`
+
+```python
+tcl_library(
+    name = "legacy_code",
+    srcs = ["legacy.tcl"],
+    tags = ["no_tcl_lint"],
+)
+```
+
+The aspect only processes source files (not generated files) and excludes `pkgIndex.tcl` files.
+""",
     implementation = _tcl_lint_aspect_impl,
     attrs = {
         "_config": attr.label(
@@ -154,7 +197,52 @@ def _tcl_format_aspect_impl(target, ctx):
     )]
 
 tcl_format_aspect = aspect(
-    doc = "An aspect for performing formatting checks on Tcl targets.",
+    doc = """\
+An aspect for performing formatting checks on Tcl targets.
+
+The `tcl_format_aspect` checks that Tcl source files are properly formatted according to
+the configured style. It uses [tclint](https://github.com/nmoroze/tclint) to verify formatting.
+
+**Usage:**
+
+Apply the aspect to check formatting of all dependencies:
+
+```python
+load("@rules_tcl//tcl:tcl_format_aspect.bzl", "tcl_format_aspect")
+
+bazel build //my:target --aspects=@rules_tcl//tcl:tcl_format_aspect.bzl%tcl_format_aspect
+```
+
+Or use it in a test:
+
+```python
+load("@rules_tcl//tcl:tcl_format_test.bzl", "tcl_format_test")
+
+tcl_format_test(
+    name = "format_check",
+    target = ":my_library",
+)
+```
+
+**Ignoring targets:**
+
+To skip format checking for specific targets, add one of these tags:
+- `no_tcl_format`
+- `no_tclformat`
+- `no_tclfmt`
+- `noformat`
+- `nofmt`
+
+```python
+tcl_library(
+    name = "generated_code",
+    srcs = ["generated.tcl"],
+    tags = ["no_tcl_format"],
+)
+```
+
+The aspect processes all source files including `pkgIndex.tcl` files.
+""",
     implementation = _tcl_format_aspect_impl,
     attrs = {
         "_config": attr.label(
@@ -226,12 +314,47 @@ def _tcl_lint_test_impl(ctx):
     ]
 
 tcl_lint_test = rule(
-    doc = "A test for performing lint checks on a tcl target.",
+    doc = """\
+A test rule for performing linting checks on a Tcl target.
+
+The `tcl_lint_test` rule creates a test that verifies a Tcl target passes linting checks.
+This is useful for enforcing code quality in CI/CD pipelines.
+
+**Usage:**
+
+```python
+load("@rules_tcl//tcl:tcl_lint_test.bzl", "tcl_lint_test")
+
+tcl_library(
+    name = "mylib",
+    srcs = ["mylib.tcl", "pkgIndex.tcl"],
+)
+
+tcl_lint_test(
+    name = "mylib_lint",
+    target = ":mylib",
+)
+```
+
+Run the lint test with:
+
+```bash
+bazel test //path/to:mylib_lint
+```
+
+The test will fail if the target has any linting errors. The test automatically excludes
+`pkgIndex.tcl` files from linting, as these are typically generated or follow a specific format.
+""",
     implementation = _tcl_lint_test_impl,
     test = True,
     attrs = {
         "target": attr.label(
-            doc = "The target to perform linting on.",
+            doc = """\
+The Tcl target to perform linting on.
+
+This must be a target that provides `TclInfo` (e.g., `tcl_library`, `tcl_binary`, or `tcl_test`).
+The test will lint all source files in this target, excluding `pkgIndex.tcl` files.
+""",
             providers = [TclInfo],
             mandatory = True,
         ),
@@ -297,12 +420,48 @@ def _tcl_format_test_impl(ctx):
     ]
 
 tcl_format_test = rule(
-    doc = "A test for performing format checks on a tcl target.",
+    doc = """\
+A test rule for performing formatting checks on a Tcl target.
+
+The `tcl_format_test` rule creates a test that verifies a Tcl target's source files are
+properly formatted according to the configured style. This is useful for enforcing
+consistent code style in CI/CD pipelines.
+
+**Usage:**
+
+```python
+load("@rules_tcl//tcl:tcl_format_test.bzl", "tcl_format_test")
+
+tcl_library(
+    name = "mylib",
+    srcs = ["mylib.tcl", "pkgIndex.tcl"],
+)
+
+tcl_format_test(
+    name = "mylib_format",
+    target = ":mylib",
+)
+```
+
+Run the format test with:
+
+```bash
+bazel test //path/to:mylib_format
+```
+
+The test will fail if any source files are not properly formatted. Unlike `tcl_lint_test`,
+this test includes `pkgIndex.tcl` files in the formatting check.
+""",
     implementation = _tcl_format_test_impl,
     test = True,
     attrs = {
         "target": attr.label(
-            doc = "The target to perform formatting checks on.",
+            doc = """\
+The Tcl target to perform formatting checks on.
+
+This must be a target that provides `TclInfo` (e.g., `tcl_library`, `tcl_binary`, or `tcl_test`).
+The test will check formatting for all source files in this target, including `pkgIndex.tcl` files.
+""",
             providers = [TclInfo],
             mandatory = True,
         ),

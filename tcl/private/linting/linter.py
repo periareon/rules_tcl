@@ -51,7 +51,7 @@ def parse_args() -> argparse.Namespace:
         if not runfiles:
             raise EnvironmentError("Failed to locate runfiles.")
 
-        def _lookup(value: str) -> Path:
+        def _lookup(value: str) -> Path:  # pylint: disable=function-redefined
             return _rlocation(runfiles, value)
 
         argv = (
@@ -118,7 +118,11 @@ def run_lint(
                     return_code = result
             except SystemExit as e:
                 # tool_main called sys.exit(), capture the exit code
-                return_code = e.code if e.code is not None else 0
+                return_code = (
+                    int(e.code)
+                    if isinstance(e.code, int)
+                    else (0 if e.code is None else 1)
+                )
 
         # Get the captured output
         captured_output = output_buffer.getvalue()

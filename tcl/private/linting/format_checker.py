@@ -54,7 +54,7 @@ def parse_args() -> argparse.Namespace:
         if not runfiles:
             raise EnvironmentError("Failed to locate runfiles.")
 
-        def _lookup(value: str) -> Path:
+        def _lookup(value: str) -> Path:  # pylint: disable=function-redefined
             return _rlocation(runfiles, value)
 
         argv = (
@@ -124,7 +124,11 @@ def run_format(
                 if result is not None:
                     return_code = result
             except SystemExit as e:
-                return_code = e.code if e.code is not None else 0
+                return_code = (
+                    int(e.code)
+                    if isinstance(e.code, int)
+                    else (0 if e.code is None else 1)
+                )
 
         # Get the captured output
         captured_output = output_buffer.getvalue()
@@ -148,21 +152,18 @@ def copy_to_temp_preserving_paths(srcs: list[Path], temp_dir: Path) -> dict[Path
     """
     path_map = {}
 
-    # Find common prefix to preserve relative structure
-    resolved_srcs = [src for src in srcs]
-
-    if len(resolved_srcs) == 1:
+    if len(srcs) == 1:
         # Single file - just copy with its name
-        src_abs = resolved_srcs[0]
+        src_abs = srcs[0]
         temp_file = temp_dir / src_abs.name
         temp_file.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src_abs, temp_file)
         path_map[src_abs] = temp_file
     else:
         # Multiple files - find common path prefix
-        common_prefix = Path(os.path.commonpath([str(p) for p in resolved_srcs]))
+        common_prefix = Path(os.path.commonpath([str(p) for p in srcs]))
 
-        for src_abs in resolved_srcs:
+        for src_abs in srcs:
             try:
                 # Get relative path from common prefix
                 rel_path = src_abs.relative_to(common_prefix)
