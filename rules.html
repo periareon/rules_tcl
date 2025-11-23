@@ -365,10 +365,16 @@ tcl_format_aspect()
 <p>The <code>tcl_format_aspect</code> checks that Tcl source files are properly formatted according to
 the configured style. It uses <a href="https://github.com/nmoroze/tclint">tclint</a> to verify formatting.</p>
 <p><strong>Usage:</strong></p>
-<p>Apply the aspect to check formatting of all dependencies:</p>
-<pre><code class="language-python">load("@rules_tcl//tcl:tcl_format_aspect.bzl", "tcl_format_aspect")
-
-bazel build //my:target --aspects=@rules_tcl//tcl:tcl_format_aspect.bzl%tcl_format_aspect
+<p>Apply the aspect to check formatting of all dependencies via command line:</p>
+<pre><code class="language-bash">bazel build //my:target --aspects=@rules_tcl//tcl:tcl_format_aspect.bzl%tcl_format_aspect
+</code></pre>
+<p>Or configure it in your <code>.bazelrc</code> file to enable format checking for all builds:</p>
+<pre><code class="language-bazelrc"># Enable tclfmt for all targets in the workspace
+build:tclfmt --aspects=@rules_tcl//tcl:tcl_format_aspect.bzl%tcl_format_aspect
+build:tclfmt --output_groups=+tcl_format_checks
+</code></pre>
+<p>Then use it with:</p>
+<pre><code class="language-bash">bazel build //my:target --config=tclfmt
 </code></pre>
 <p>Or use it in a test:</p>
 <pre><code class="language-python">load("@rules_tcl//tcl:tcl_format_test.bzl", "tcl_format_test")
@@ -407,10 +413,16 @@ tcl_lint_aspect()
 <p>The <code>tcl_lint_aspect</code> applies linting checks to all Tcl targets in the dependency graph.
 It uses <a href="https://github.com/nmoroze/tclint">tclint</a> to check for code quality issues.</p>
 <p><strong>Usage:</strong></p>
-<p>Apply the aspect to check all dependencies of a target:</p>
-<pre><code class="language-python">load("@rules_tcl//tcl:tcl_lint_aspect.bzl", "tcl_lint_aspect")
-
-bazel build //my:target --aspects=@rules_tcl//tcl:tcl_lint_aspect.bzl%tcl_lint_aspect
+<p>Apply the aspect to check all dependencies of a target via command line:</p>
+<pre><code class="language-bash">bazel build //my:target --aspects=@rules_tcl//tcl:tcl_lint_aspect.bzl%tcl_lint_aspect
+</code></pre>
+<p>Or configure it in your <code>.bazelrc</code> file to enable linting for all builds:</p>
+<pre><code class="language-bazelrc"># Enable tclint for all targets in the workspace
+build:tclint --aspects=@rules_tcl//tcl:tcl_lint_aspect.bzl%tcl_lint_aspect
+build:tclint --output_groups=+tcl_lint_checks
+</code></pre>
+<p>Then use it with:</p>
+<pre><code class="language-bash">bazel build //my:target --config=tclint
 </code></pre>
 <p>Or use it in a test:</p>
 <pre><code class="language-python">load("@rules_tcl//tcl:tcl_lint_test.bzl", "tcl_lint_test")
