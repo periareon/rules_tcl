@@ -71,7 +71,37 @@ def _tcl_toolchain_impl(ctx):
     ]
 
 tcl_toolchain = rule(
-    doc = "A toolchain for building `Tcl` targets.",
+    doc = """\
+A toolchain rule that defines the Tcl interpreter and libraries for building Tcl targets.
+
+The `tcl_toolchain` rule configures the Tcl environment used by all `tcl_binary`, `tcl_library`,
+and `tcl_test` targets. It specifies:
+- The Tcl interpreter (`tclsh`) to use for execution
+- The Tcl core library files (`tclcore`)
+- The Tcl standard library (`tcllib`)
+- Optional linting tools (`tclint`) for code quality checks
+
+Typically, you don't need to create a `tcl_toolchain` directly. The rules provide a default
+toolchain that you register in your `MODULE.bazel`:
+
+```python
+register_toolchains("@rules_tcl//tcl/toolchain")
+```
+
+If you need a custom toolchain (e.g., a different Tcl version), you can define your own:
+
+```python
+load("@rules_tcl//tcl:tcl_toolchain.bzl", "tcl_toolchain")
+
+tcl_toolchain(
+    name = "my_tcl_toolchain",
+    tclsh = "@tcl_8_6//:tclsh",
+    tclcore = "@tcl_8_6//:tclcore",
+    tcllib = "@tcllib//:tcllib",
+    tclint = "@tclint//:tclint",  # Optional, for linting
+)
+```
+""",
     implementation = _tcl_toolchain_impl,
     attrs = {
         "tclcore": attr.label(
@@ -79,7 +109,7 @@ tcl_toolchain = rule(
             mandatory = True,
         ),
         "tclint": attr.label(
-            doc = "The [`tclint`](https://github.com/nmoroze/tclint) python library.",
+            doc = "The [`tclint`](https://github.com/nmoroze/tclint) python library. This attribute is required for [`tcl_lint_aspect`](#tcl_lint_aspect)/[`tcl_format_aspect`](#tcl_format_aspect) but otherwise optional for core rules.",
             cfg = "target",
             mandatory = False,
         ),

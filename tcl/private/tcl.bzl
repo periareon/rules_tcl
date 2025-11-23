@@ -52,7 +52,28 @@ _EXECUTABLE_ATTRS = _COMMON_ATTRS | {
 
 _TEST_ATTRS = _EXECUTABLE_ATTRS | {
     "env_inherit": attr.string_list(
-        doc = "Specifies additional environment variables to inherit from the external environment when the test is executed by `bazel test`.",
+        doc = """\
+Specifies additional environment variables to inherit from the external environment.
+
+This attribute is only available for `tcl_test` rules. When the test is executed by
+`bazel test`, these environment variables from the host environment will be passed
+through to the test.
+
+Example:
+```python
+tcl_test(
+    name = "my_test",
+    srcs = ["test.tcl"],
+    env_inherit = [
+        "PATH",
+        "HOME",
+        "USER",
+    ],
+)
+```
+
+This is useful when tests need access to system tools or user-specific configuration.
+""",
     ),
 }
 
@@ -172,7 +193,44 @@ def _tcl_library_impl(ctx):
     ]
 
 tcl_library = rule(
-    doc = "A Tcl package that can be depended upon. Note that `pkgIndex.tcl` must be included in the `srcs` attribute.",
+    doc = """\
+A Tcl library that can be depended upon by other Tcl targets.
+
+A `tcl_library` represents a Tcl package that can be imported using Tcl's `package require` command.
+The library must include a `pkgIndex.tcl` file in its `srcs` attribute, which defines the package
+metadata and how to load the package.
+
+**Important**: The `pkgIndex.tcl` file must be included in the `srcs` attribute. This file is used
+by Tcl's package system to locate and load the package.
+
+Example:
+
+```python
+load("@rules_tcl//tcl:defs.bzl", "tcl_library")
+
+tcl_library(
+    name = "mylib",
+    srcs = [
+        "mylib.tcl",
+        "pkgIndex.tcl",
+    ],
+    deps = [
+        ":otherlib",  # Another tcl_library
+    ],
+    visibility = ["//visibility:public"],
+)
+```
+
+The library can then be used as a dependency in other targets:
+
+```python
+tcl_binary(
+    name = "app",
+    srcs = ["app.tcl"],
+    deps = [":mylib"],
+)
+```
+""",
     implementation = _tcl_library_impl,
     attrs = _COMMON_ATTRS,
     provides = [TclInfo],
@@ -401,7 +459,40 @@ def _tcl_test_impl(ctx):
     return _tcl_binary_impl(ctx)
 
 tcl_test = rule(
-    doc = "A `tcl_test` rule compiles a test. A test is a binary wrapper around some test code.",
+    doc = """\
+A test rule for Tcl code that can be executed with `bazel test`.
+
+A `tcl_test` is similar to a `tcl_binary` but is designed for testing. It supports all the same
+attributes as `tcl_binary`, plus additional test-specific features like environment variable
+inheritance.
+
+Tests are executed by Bazel's test runner and can be run with:
+
+```bash
+bazel test //path/to:my_test
+```
+
+Example:
+
+```python
+load("@rules_tcl//tcl:defs.bzl", "tcl_test")
+
+tcl_test(
+    name = "my_test",
+    srcs = ["test.tcl"],
+    deps = [
+        ":mylib",  # The library being tested
+    ],
+    env = {
+        "TEST_MODE": "1",
+    },
+    env_inherit = ["PATH"],  # Inherit PATH from the environment
+)
+```
+
+The test can use Tcl's standard testing frameworks or custom test code. Test failures are
+detected by non-zero exit codes.
+""",
     implementation = _tcl_test_impl,
     attrs = _TEST_ATTRS,
     test = True,

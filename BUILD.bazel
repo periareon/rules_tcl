@@ -1,4 +1,7 @@
 exports_files([
+    ".isort.cfg",
+    ".mypy.ini",
+    ".pylintrc.toml",
     "MODULE.bazel",
     "version.bzl",
 ])
