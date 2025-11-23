@@ -157,16 +157,61 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="rules_tcl"><a class="header" href="#rules_tcl">rules_tcl</a></h1>
+<p>Bazel rules for building, testing, and managing <a href="https://www.tcl-lang.org/">Tcl</a> applications and libraries.</p>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
-<p>This repository implements Bazel rules for the <a href="https://www.tcl-lang.org/">Tcl scripting language</a>.</p>
-<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
-<p>To begin using the rules. Add the following to your <code>MODULE.bazel</code> file.</p>
+<p><code>rules_tcl</code> provides a comprehensive set of Bazel rules for working with the Tcl scripting language. It supports:</p>
+<ul>
+<li><strong>Building executables</strong> with <code>tcl_binary</code></li>
+<li><strong>Creating reusable libraries</strong> with <code>tcl_library</code></li>
+<li><strong>Writing and running tests</strong> with <code>tcl_test</code></li>
+<li><strong>Code quality checks</strong> with linting and formatting aspects</li>
+<li><strong>Dependency management</strong> through Tcl's package system</li>
+</ul>
+<p>The rules handle Tcl's package system, runfiles, and provide seamless integration with Bazel's build system.</p>
+<h2 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h2>
+<h3 id="setup"><a class="header" href="#setup">Setup</a></h3>
+<p>Add the following to your <code>MODULE.bazel</code> file:</p>
 <pre><code class="language-python">bazel_dep(name = "rules_tcl", version = "{version}")
 
 register_toolchains(
     "@rules_tcl//tcl/toolchain",
 )
 </code></pre>
+<h3 id="basic-example"><a class="header" href="#basic-example">Basic Example</a></h3>
+<p>Create a simple Tcl executable:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_binary.bzl", "tcl_binary")
+
+tcl_binary(
+    name = "hello",
+    srcs = ["hello.tcl"],
+)
+</code></pre>
+<h3 id="library-example"><a class="header" href="#library-example">Library Example</a></h3>
+<p>Create a reusable Tcl library:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_library.bzl", "tcl_library")
+
+tcl_library(
+    name = "greetings",
+    srcs = [
+        "greet.tcl",
+        "pkgIndex.tcl",  # Required for libraries
+    ],
+)
+</code></pre>
+<h2 id="documentation"><a class="header" href="#documentation">Documentation</a></h2>
+<ul>
+<li><a href="./rules.html">Rules Reference</a> - Complete documentation for all available rules</li>
+<li><a href="../examples/">Examples</a> - Working examples in the repository</li>
+</ul>
+<h2 id="features"><a class="header" href="#features">Features</a></h2>
+<ul>
+<li><strong>Package System Support</strong>: Automatic handling of <code>pkgIndex.tcl</code> files for Tcl's package system</li>
+<li><strong>Dependency Management</strong>: Transitive dependency resolution for Tcl libraries</li>
+<li><strong>Code Quality</strong>: Built-in linting and formatting checks using <a href="https://github.com/nmoroze/tclint">tclint</a></li>
+<li><strong>Test Support</strong>: Native test rule with environment variable support</li>
+<li><strong>Cross-Platform</strong>: Works on Linux, macOS, and Windows</li>
+<li><strong>Runfiles Integration</strong>: Proper handling of data files and dependencies at runtime</li>
+</ul>
 <div style="break-before: page; page-break-before: always;"></div><!-- Generated with Stardoc: http://skydoc.bazel.build -->
 <p>Tcl Bazel rules</p>
 <h2 id="rules"><a class="header" href="#rules">Rules</a></h2>
@@ -221,11 +266,32 @@ load("@rules_tcl//tcl:defs.bzl", "tcl_format_test")
 
 tcl_format_test(<a href="rules.html#tcl_format_test-name">name</a>, <a href="rules.html#tcl_format_test-target">target</a>)
 </pre>
-<p>A test for performing format checks on a tcl target.</p>
+<p>A test rule for performing formatting checks on a Tcl target.</p>
+<p>The <code>tcl_format_test</code> rule creates a test that verifies a Tcl target's source files are
+properly formatted according to the configured style. This is useful for enforcing
+consistent code style in CI/CD pipelines.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_format_test.bzl", "tcl_format_test")
+
+tcl_library(
+    name = "mylib",
+    srcs = ["mylib.tcl", "pkgIndex.tcl"],
+)
+
+tcl_format_test(
+    name = "mylib_format",
+    target = ":mylib",
+)
+</code></pre>
+<p>Run the format test with:</p>
+<pre><code class="language-bash">bazel test //path/to:mylib_format
+</code></pre>
+<p>The test will fail if any source files are not properly formatted. Unlike <code>tcl_lint_test</code>,
+this test includes <code>pkgIndex.tcl</code> files in the formatting check.</p>
 <p><strong>ATTRIBUTES</strong></p>
 <div class="table-wrapper"><table><thead><tr><th style="text-align: left">Name</th><th style="text-align: left">Description</th><th style="text-align: left">Type</th><th style="text-align: left">Mandatory</th><th style="text-align: left">Default</th></tr></thead><tbody>
 <tr><td style="text-align: left"><a id="tcl_format_test-name"></a>name</td><td style="text-align: left">A unique name for this target.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels#target-names">Name</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
-<tr><td style="text-align: left"><a id="tcl_format_test-target"></a>target</td><td style="text-align: left">The target to perform formatting checks on.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
+<tr><td style="text-align: left"><a id="tcl_format_test-target"></a>target</td><td style="text-align: left">The Tcl target to perform formatting checks on.<br><br>This must be a target that provides <code>TclInfo</code> (e.g., <code>tcl_library</code>, <code>tcl_binary</code>, or <code>tcl_test</code>). The test will check formatting for all source files in this target, including <code>pkgIndex.tcl</code> files.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
 </tbody></table>
 </div>
 <p><a id="tcl_library"></a></p>
@@ -235,7 +301,34 @@ load("@rules_tcl//tcl:defs.bzl", "tcl_library")
 
 tcl_library(<a href="rules.html#tcl_library-name">name</a>, <a href="rules.html#tcl_library-deps">deps</a>, <a href="rules.html#tcl_library-srcs">srcs</a>, <a href="rules.html#tcl_library-data">data</a>)
 </pre>
-<p>A Tcl package that can be depended upon. Note that <code>pkgIndex.tcl</code> must be included in the <code>srcs</code> attribute.</p>
+<p>A Tcl library that can be depended upon by other Tcl targets.</p>
+<p>A <code>tcl_library</code> represents a Tcl package that can be imported using Tcl's <code>package require</code> command.
+The library must include a <code>pkgIndex.tcl</code> file in its <code>srcs</code> attribute, which defines the package
+metadata and how to load the package.</p>
+<p><strong>Important</strong>: The <code>pkgIndex.tcl</code> file must be included in the <code>srcs</code> attribute. This file is used
+by Tcl's package system to locate and load the package.</p>
+<p>Example:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:defs.bzl", "tcl_library")
+
+tcl_library(
+    name = "mylib",
+    srcs = [
+        "mylib.tcl",
+        "pkgIndex.tcl",
+    ],
+    deps = [
+        ":otherlib",  # Another tcl_library
+    ],
+    visibility = ["//visibility:public"],
+)
+</code></pre>
+<p>The library can then be used as a dependency in other targets:</p>
+<pre><code class="language-python">tcl_binary(
+    name = "app",
+    srcs = ["app.tcl"],
+    deps = [":mylib"],
+)
+</code></pre>
 <p><strong>ATTRIBUTES</strong></p>
 <div class="table-wrapper"><table><thead><tr><th style="text-align: left">Name</th><th style="text-align: left">Description</th><th style="text-align: left">Type</th><th style="text-align: left">Mandatory</th><th style="text-align: left">Default</th></tr></thead><tbody>
 <tr><td style="text-align: left"><a id="tcl_library-name"></a>name</td><td style="text-align: left">A unique name for this target.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels#target-names">Name</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
@@ -251,11 +344,31 @@ load("@rules_tcl//tcl:defs.bzl", "tcl_lint_test")
 
 tcl_lint_test(<a href="rules.html#tcl_lint_test-name">name</a>, <a href="rules.html#tcl_lint_test-target">target</a>)
 </pre>
-<p>A test for performing lint checks on a tcl target.</p>
+<p>A test rule for performing linting checks on a Tcl target.</p>
+<p>The <code>tcl_lint_test</code> rule creates a test that verifies a Tcl target passes linting checks.
+This is useful for enforcing code quality in CI/CD pipelines.</p>
+<p><strong>Usage:</strong></p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_lint_test.bzl", "tcl_lint_test")
+
+tcl_library(
+    name = "mylib",
+    srcs = ["mylib.tcl", "pkgIndex.tcl"],
+)
+
+tcl_lint_test(
+    name = "mylib_lint",
+    target = ":mylib",
+)
+</code></pre>
+<p>Run the lint test with:</p>
+<pre><code class="language-bash">bazel test //path/to:mylib_lint
+</code></pre>
+<p>The test will fail if the target has any linting errors. The test automatically excludes
+<code>pkgIndex.tcl</code> files from linting, as these are typically generated or follow a specific format.</p>
 <p><strong>ATTRIBUTES</strong></p>
 <div class="table-wrapper"><table><thead><tr><th style="text-align: left">Name</th><th style="text-align: left">Description</th><th style="text-align: left">Type</th><th style="text-align: left">Mandatory</th><th style="text-align: left">Default</th></tr></thead><tbody>
 <tr><td style="text-align: left"><a id="tcl_lint_test-name"></a>name</td><td style="text-align: left">A unique name for this target.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels#target-names">Name</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
-<tr><td style="text-align: left"><a id="tcl_lint_test-target"></a>target</td><td style="text-align: left">The target to perform linting on.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
+<tr><td style="text-align: left"><a id="tcl_lint_test-target"></a>target</td><td style="text-align: left">The Tcl target to perform linting on.<br><br>This must be a target that provides <code>TclInfo</code> (e.g., <code>tcl_library</code>, <code>tcl_binary</code>, or <code>tcl_test</code>). The test will lint all source files in this target, excluding <code>pkgIndex.tcl</code> files.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
 </tbody></table>
 </div>
 <p><a id="tcl_toolchain"></a></p>
@@ -265,12 +378,35 @@ load("@rules_tcl//tcl:defs.bzl", "tcl_toolchain")
 
 tcl_toolchain(<a href="rules.html#tcl_toolchain-name">name</a>, <a href="rules.html#tcl_toolchain-tclcore">tclcore</a>, <a href="rules.html#tcl_toolchain-tclint">tclint</a>, <a href="rules.html#tcl_toolchain-tcllib">tcllib</a>, <a href="rules.html#tcl_toolchain-tclsh">tclsh</a>)
 </pre>
-<p>A toolchain for building <code>Tcl</code> targets.</p>
+<p>A toolchain rule that defines the Tcl interpreter and libraries for building Tcl targets.</p>
+<p>The <code>tcl_toolchain</code> rule configures the Tcl environment used by all <code>tcl_binary</code>, <code>tcl_library</code>,
+and <code>tcl_test</code> targets. It specifies:</p>
+<ul>
+<li>The Tcl interpreter (<code>tclsh</code>) to use for execution</li>
+<li>The Tcl core library files (<code>tclcore</code>)</li>
+<li>The Tcl standard library (<code>tcllib</code>)</li>
+<li>Optional linting tools (<code>tclint</code>) for code quality checks</li>
+</ul>
+<p>Typically, you don't need to create a <code>tcl_toolchain</code> directly. The rules provide a default
+toolchain that you register in your <code>MODULE.bazel</code>:</p>
+<pre><code class="language-python">register_toolchains("@rules_tcl//tcl/toolchain")
+</code></pre>
+<p>If you need a custom toolchain (e.g., a different Tcl version), you can define your own:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_toolchain.bzl", "tcl_toolchain")
+
+tcl_toolchain(
+    name = "my_tcl_toolchain",
+    tclsh = "@tcl_8_6//:tclsh",
+    tclcore = "@tcl_8_6//:tclcore",
+    tcllib = "@tcllib//:tcllib",
+    tclint = "@tclint//:tclint",  # Optional, for linting
+)
+</code></pre>
 <p><strong>ATTRIBUTES</strong></p>
 <div class="table-wrapper"><table><thead><tr><th style="text-align: left">Name</th><th style="text-align: left">Description</th><th style="text-align: left">Type</th><th style="text-align: left">Mandatory</th><th style="text-align: left">Default</th></tr></thead><tbody>
 <tr><td style="text-align: left"><a id="tcl_toolchain-name"></a>name</td><td style="text-align: left">A unique name for this target.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels#target-names">Name</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
 <tr><td style="text-align: left"><a id="tcl_toolchain-tclcore"></a>tclcore</td><td style="text-align: left">A label to the <code>tclcore</code> files.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
-<tr><td style="text-align: left"><a id="tcl_toolchain-tclint"></a>tclint</td><td style="text-align: left">The <a href="https://github.com/nmoroze/tclint"><code>tclint</code></a> python library.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">optional</td><td style="text-align: left"><code>None</code></td></tr>
+<tr><td style="text-align: left"><a id="tcl_toolchain-tclint"></a>tclint</td><td style="text-align: left">The <a href="https://github.com/nmoroze/tclint"><code>tclint</code></a> python library. This attribute is required for <a href="rules.html#tcl_lint_aspect"><code>tcl_lint_aspect</code></a>/<a href="rules.html#tcl_format_aspect"><code>tcl_format_aspect</code></a> but otherwise optional for core rules.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">optional</td><td style="text-align: left"><code>None</code></td></tr>
 <tr><td style="text-align: left"><a id="tcl_toolchain-tcllib"></a>tcllib</td><td style="text-align: left">A label to the <code>tcllib</code> files.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
 <tr><td style="text-align: left"><a id="tcl_toolchain-tclsh"></a>tclsh</td><td style="text-align: left">The path to a <code>tclsh</code> binary.</td><td style="text-align: left"><a href="https://bazel.build/concepts/labels">Label</a></td><td style="text-align: left">required</td><td style="text-align: left"></td></tr>
 </tbody></table>
@@ -283,6 +419,38 @@ load("@rules_tcl//tcl:defs.bzl", "tcl_format_aspect")
 tcl_format_aspect()
 </pre>
 <p>An aspect for performing formatting checks on Tcl targets.</p>
+<p>The <code>tcl_format_aspect</code> checks that Tcl source files are properly formatted according to
+the configured style. It uses <a href="https://github.com/nmoroze/tclint">tclint</a> to verify formatting.</p>
+<p><strong>Usage:</strong></p>
+<p>Apply the aspect to check formatting of all dependencies:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_format_aspect.bzl", "tcl_format_aspect")
+
+bazel build //my:target --aspects=@rules_tcl//tcl:tcl_format_aspect.bzl%tcl_format_aspect
+</code></pre>
+<p>Or use it in a test:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_format_test.bzl", "tcl_format_test")
+
+tcl_format_test(
+    name = "format_check",
+    target = ":my_library",
+)
+</code></pre>
+<p><strong>Ignoring targets:</strong></p>
+<p>To skip format checking for specific targets, add one of these tags:</p>
+<ul>
+<li><code>no_tcl_format</code></li>
+<li><code>no_tclformat</code></li>
+<li><code>no_tclfmt</code></li>
+<li><code>noformat</code></li>
+<li><code>nofmt</code></li>
+</ul>
+<pre><code class="language-python">tcl_library(
+    name = "generated_code",
+    srcs = ["generated.tcl"],
+    tags = ["no_tcl_format"],
+)
+</code></pre>
+<p>The aspect processes all source files including <code>pkgIndex.tcl</code> files.</p>
 <p><strong>ASPECT ATTRIBUTES</strong></p>
 <p><strong>ATTRIBUTES</strong></p>
 <p><a id="tcl_lint_aspect"></a></p>
@@ -292,7 +460,37 @@ load("@rules_tcl//tcl:defs.bzl", "tcl_lint_aspect")
 
 tcl_lint_aspect()
 </pre>
-<p>An aspect for performing lint+formatting checks on Tcl targets.</p>
+<p>An aspect for performing linting checks on Tcl targets.</p>
+<p>The <code>tcl_lint_aspect</code> applies linting checks to all Tcl targets in the dependency graph.
+It uses <a href="https://github.com/nmoroze/tclint">tclint</a> to check for code quality issues.</p>
+<p><strong>Usage:</strong></p>
+<p>Apply the aspect to check all dependencies of a target:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_lint_aspect.bzl", "tcl_lint_aspect")
+
+bazel build //my:target --aspects=@rules_tcl//tcl:tcl_lint_aspect.bzl%tcl_lint_aspect
+</code></pre>
+<p>Or use it in a test:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_lint_test.bzl", "tcl_lint_test")
+
+tcl_lint_test(
+    name = "lint_check",
+    target = ":my_library",
+)
+</code></pre>
+<p><strong>Ignoring targets:</strong></p>
+<p>To skip linting for specific targets, add one of these tags:</p>
+<ul>
+<li><code>no_tcl_lint</code></li>
+<li><code>no_lint</code></li>
+<li><code>nolint</code></li>
+</ul>
+<pre><code class="language-python">tcl_library(
+    name = "legacy_code",
+    srcs = ["legacy.tcl"],
+    tags = ["no_tcl_lint"],
+)
+</code></pre>
+<p>The aspect only processes source files (not generated files) and excludes <code>pkgIndex.tcl</code> files.</p>
 <p><strong>ASPECT ATTRIBUTES</strong></p>
 <p><strong>ATTRIBUTES</strong></p>
 

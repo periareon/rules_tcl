@@ -156,16 +156,61 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="rules_tcl"><a class="header" href="#rules_tcl">rules_tcl</a></h1>
+<p>Bazel rules for building, testing, and managing <a href="https://www.tcl-lang.org/">Tcl</a> applications and libraries.</p>
 <h2 id="overview"><a class="header" href="#overview">Overview</a></h2>
-<p>This repository implements Bazel rules for the <a href="https://www.tcl-lang.org/">Tcl scripting language</a>.</p>
-<h2 id="setup"><a class="header" href="#setup">Setup</a></h2>
-<p>To begin using the rules. Add the following to your <code>MODULE.bazel</code> file.</p>
+<p><code>rules_tcl</code> provides a comprehensive set of Bazel rules for working with the Tcl scripting language. It supports:</p>
+<ul>
+<li><strong>Building executables</strong> with <code>tcl_binary</code></li>
+<li><strong>Creating reusable libraries</strong> with <code>tcl_library</code></li>
+<li><strong>Writing and running tests</strong> with <code>tcl_test</code></li>
+<li><strong>Code quality checks</strong> with linting and formatting aspects</li>
+<li><strong>Dependency management</strong> through Tcl's package system</li>
+</ul>
+<p>The rules handle Tcl's package system, runfiles, and provide seamless integration with Bazel's build system.</p>
+<h2 id="quick-start"><a class="header" href="#quick-start">Quick Start</a></h2>
+<h3 id="setup"><a class="header" href="#setup">Setup</a></h3>
+<p>Add the following to your <code>MODULE.bazel</code> file:</p>
 <pre><code class="language-python">bazel_dep(name = "rules_tcl", version = "{version}")
 
 register_toolchains(
     "@rules_tcl//tcl/toolchain",
 )
 </code></pre>
+<h3 id="basic-example"><a class="header" href="#basic-example">Basic Example</a></h3>
+<p>Create a simple Tcl executable:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_binary.bzl", "tcl_binary")
+
+tcl_binary(
+    name = "hello",
+    srcs = ["hello.tcl"],
+)
+</code></pre>
+<h3 id="library-example"><a class="header" href="#library-example">Library Example</a></h3>
+<p>Create a reusable Tcl library:</p>
+<pre><code class="language-python">load("@rules_tcl//tcl:tcl_library.bzl", "tcl_library")
+
+tcl_library(
+    name = "greetings",
+    srcs = [
+        "greet.tcl",
+        "pkgIndex.tcl",  # Required for libraries
+    ],
+)
+</code></pre>
+<h2 id="documentation"><a class="header" href="#documentation">Documentation</a></h2>
+<ul>
+<li><a href="./rules.html">Rules Reference</a> - Complete documentation for all available rules</li>
+<li><a href="../examples/">Examples</a> - Working examples in the repository</li>
+</ul>
+<h2 id="features"><a class="header" href="#features">Features</a></h2>
+<ul>
+<li><strong>Package System Support</strong>: Automatic handling of <code>pkgIndex.tcl</code> files for Tcl's package system</li>
+<li><strong>Dependency Management</strong>: Transitive dependency resolution for Tcl libraries</li>
+<li><strong>Code Quality</strong>: Built-in linting and formatting checks using <a href="https://github.com/nmoroze/tclint">tclint</a></li>
+<li><strong>Test Support</strong>: Native test rule with environment variable support</li>
+<li><strong>Cross-Platform</strong>: Works on Linux, macOS, and Windows</li>
+<li><strong>Runfiles Integration</strong>: Proper handling of data files and dependencies at runtime</li>
+</ul>
 
                     </main>
 
