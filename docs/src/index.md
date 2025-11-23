@@ -56,17 +56,3 @@ tcl_library(
     ],
 )
 ```
-
-## Documentation
-
-- [Rules Reference](./rules.md) - Complete documentation for all available rules
-- [Examples](../examples/) - Working examples in the repository
-
-## Features
-
-- **Package System Support**: Automatic handling of `pkgIndex.tcl` files for Tcl's package system
-- **Dependency Management**: Transitive dependency resolution for Tcl libraries
-- **Code Quality**: Built-in linting and formatting checks using [tclint](https://github.com/nmoroze/tclint)
-- **Test Support**: Native test rule with environment variable support
-- **Cross-Platform**: Works on Linux, macOS, and Windows
-- **Runfiles Integration**: Proper handling of data files and dependencies at runtime
