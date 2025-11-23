@@ -107,12 +107,23 @@ It uses [tclint](https://github.com/nmoroze/tclint) to check for code quality is
 
 **Usage:**
 
-Apply the aspect to check all dependencies of a target:
+Apply the aspect to check all dependencies of a target via command line:
 
-```python
-load("@rules_tcl//tcl:tcl_lint_aspect.bzl", "tcl_lint_aspect")
-
+```bash
 bazel build //my:target --aspects=@rules_tcl//tcl:tcl_lint_aspect.bzl%tcl_lint_aspect
+```
+
+Or configure it in your `.bazelrc` file to enable linting for all builds:
+
+```bazelrc
+# Enable tclint for all targets in the workspace
+build:tclint --aspects=@rules_tcl//tcl:tcl_lint_aspect.bzl%tcl_lint_aspect
+build:tclint --output_groups=+tcl_lint_checks
+```
+
+Then use it with:
+```bash
+bazel build //my:target --config=tclint
 ```
 
 Or use it in a test:
@@ -205,12 +216,23 @@ the configured style. It uses [tclint](https://github.com/nmoroze/tclint) to ver
 
 **Usage:**
 
-Apply the aspect to check formatting of all dependencies:
+Apply the aspect to check formatting of all dependencies via command line:
 
-```python
-load("@rules_tcl//tcl:tcl_format_aspect.bzl", "tcl_format_aspect")
-
+```bash
 bazel build //my:target --aspects=@rules_tcl//tcl:tcl_format_aspect.bzl%tcl_format_aspect
+```
+
+Or configure it in your `.bazelrc` file to enable format checking for all builds:
+
+```bazelrc
+# Enable tclfmt for all targets in the workspace
+build:tclfmt --aspects=@rules_tcl//tcl:tcl_format_aspect.bzl%tcl_format_aspect
+build:tclfmt --output_groups=+tcl_format_checks
+```
+
+Then use it with:
+```bash
+bazel build //my:target --config=tclfmt
 ```
 
 Or use it in a test:
