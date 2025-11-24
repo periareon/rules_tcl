@@ -1,4 +1,4 @@
-load("//tcl:tcl_binary.bzl", "tcl_binary")
+load("@rules_tcl//tcl:tcl_binary.bzl", "tcl_binary")
 
 tcl_binary(
     name = "hello_world",

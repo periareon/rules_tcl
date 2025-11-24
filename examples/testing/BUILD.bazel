@@ -1,0 +1,6 @@
+load("@rules_tcl//tcl:tcl_test.bzl", "tcl_test")
+
+tcl_test(
+    name = "math_test",
+    srcs = ["math_test.tcl"],
+)
