@@ -1,4 +1,4 @@
-load("//tcl:tcl_library.bzl", "tcl_library")
+load("@rules_tcl//tcl:tcl_library.bzl", "tcl_library")
 
 tcl_library(
     name = "greetings",
@@ -6,5 +6,5 @@ tcl_library(
         "greet.tcl",
         "pkgIndex.tcl",
     ],
-    visibility = ["//examples/library:__subpackages__"],
+    visibility = ["//library:__subpackages__"],
 )
